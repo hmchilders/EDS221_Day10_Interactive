@@ -1,0 +1,51 @@
+---
+title: "Day 10 Activity"
+author: "Heather Childers"
+format: html
+editor: visual
+
+execute: 
+  echo: false
+  warning: false
+---
+
+# **Long-term ice cover duration: North Temperate Lakes LTER**
+
+The datasets used for this project are North Temperate Lakes LTER: Ice Duration - Madison Lakes Area 1853 and Madison Wisconsin Daily Meteorological Data 1869.
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
+
+mad_lake <- read_csv(here("data", "ntl20_v6.csv"))
+ice_cover<- read_csv(here("data", "ntl33_v7.csv"), na = "-999")
+```
+
+```{r}
+ice_dur <- ice_cover %>% 
+  group_by(lakeid) %>% 
+  select("lakeid", "year4", "ice_duration")
+
+
+```
+
+```{r}
+ggplot(ice_dur, aes(x = lakeid, y = ice_duration))+
+  geom_jitter(aes(color = year4), width = 0.1, alpha = 0.5)+
+  labs(
+    title = "Ice Duration for Wisconsin Lakes",
+    x = "Lake Name",
+    y = "Days per year of frozen lake"
+  )
+  
+```
+
+```{r}
+summ_table<- ice_cover %>% 
+  group_by(year4,lakeid) %>% 
+  summarize(
+    mean_ice_duration = mean(ice_dur, na.rm = TRUE)
+  )
+```
